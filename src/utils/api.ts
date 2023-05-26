@@ -20,11 +20,6 @@ const getBaseUrl = () => {
 export const api = createTRPCNext<AppRouter>({
     config() {
         return {
-            /**
-             * Transformer used for data de-serialization from the server.
-             *
-             * @see https://trpc.io/docs/data-transformers
-             */
             transformer: superjson,
 
             /**
