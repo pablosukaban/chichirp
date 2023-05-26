@@ -8,6 +8,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import Image from 'next/image';
 import { LoadingPage } from '~/components/loading';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 dayjs.extend(relativeTime);
 
@@ -23,7 +24,26 @@ const CreatePostWizard = () => {
             setInputValue('');
             void ctx.posts.getAll.invalidate();
         },
+        onError: (error) => {
+            const errorMesage = error.data?.zodError?.fieldErrors.content;
+
+            if (errorMesage && errorMesage[0]) {
+                toast.error(errorMesage[0]);
+            } else {
+                toast.error('Failed to create post');
+            }
+        },
     });
+
+    const sendPost = () => {
+        mutate({ content: inputValue });
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && inputValue.length > 0) {
+            sendPost();
+        }
+    };
 
     if (!user) return null;
 
@@ -38,15 +58,22 @@ const CreatePostWizard = () => {
                     height={80}
                 />
                 <input
-                    className="grow bg-transparent p-4"
+                    className="grow bg-transparent p-4 outline-none focus:outline-none"
                     placeholder="Put some emoji"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     disabled={isPosting}
+                    onKeyDown={handleKeyDown}
                 />
-                <button onClick={() => mutate({ content: inputValue })}>
-                    Post
-                </button>
+                {inputValue.length > 0 && (
+                    <button
+                        onClick={sendPost}
+                        disabled={isPosting}
+                        className="disabled:text-slate-600"
+                    >
+                        {isPosting ? 'Posting...' : 'Post'}
+                    </button>
+                )}
             </div>
             {/* <SignOutButton /> */}
         </div>
