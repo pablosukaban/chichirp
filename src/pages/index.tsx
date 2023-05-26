@@ -40,9 +40,14 @@ const CreatePostWizard = () => {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && inputValue.length > 0) {
-            sendPost();
+        if (e.key !== 'Enter') return;
+
+        if (inputValue.length === 0) {
+            toast.error('Post cannot be empty');
+            return;
         }
+
+        sendPost();
     };
 
     if (!user) return null;
