@@ -1,12 +1,12 @@
-import { SignInButton, useUser } from "@clerk/nextjs";
-import { type NextPage } from "next";
-import Head from "next/head";
-import { type RouterOutputs, api } from "~/utils/api";
+import { SignInButton, useUser } from '@clerk/nextjs';
+import { type NextPage } from 'next';
+import Head from 'next/head';
+import { type RouterOutputs, api } from '~/utils/api';
 
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import Image from "next/image";
-import { LoadingPage } from "~/components/loading";
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import Image from 'next/image';
+import { LoadingPage } from '~/components/loading';
 
 dayjs.extend(relativeTime);
 
@@ -35,7 +35,7 @@ const CreatePostWizard = () => {
     );
 };
 
-type PostWithUser = RouterOutputs["posts"]["getAll"][number];
+type PostWithUser = RouterOutputs['posts']['getAll'][number];
 const PostView = (props: PostWithUser) => {
     const { author, post } = props;
 
@@ -57,7 +57,7 @@ const PostView = (props: PostWithUser) => {
                         <span className="text-slate-300">{`@${author.username}`}</span>
                         <span className="px-2 text-slate-400">·</span>
                         <span className="text-slate-400">{`${dayjs(
-                            post.createdAt
+                            post.createdAt,
                         ).fromNow()}`}</span>
                     </div>
                     <span className="text-2xl">{post.content}</span>
