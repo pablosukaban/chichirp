@@ -164,7 +164,7 @@ const Feed = () => {
 };
 
 const Home: NextPage = () => {
-    const { isLoaded: userLoaded, isSignedIn } = useUser();
+    const { isLoaded: userLoaded } = useUser();
 
     api.posts.getAll.useQuery();
 

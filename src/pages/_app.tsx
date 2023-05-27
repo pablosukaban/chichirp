@@ -1,9 +1,4 @@
-import {
-    ClerkProvider,
-    SignInButton,
-    SignOutButton,
-    useUser,
-} from '@clerk/nextjs';
+import { ClerkProvider } from '@clerk/nextjs';
 import { type AppType } from 'next/app';
 import { api } from '~/utils/api';
 import '~/styles/globals.css';
