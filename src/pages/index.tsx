@@ -7,7 +7,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import Image from 'next/image';
 import { LoadingPage } from '~/components/loading';
 import { useState } from 'react';
-import { useToast } from '~/components/use-toast';
+import { toast, useToast } from '~/components/use-toast';
 import Link from 'next/link';
 import {
     Card,
@@ -18,7 +18,7 @@ import {
 } from '~/components/card';
 import { Input } from '~/components/input';
 import { Button } from '~/components/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { Separator } from '~/components/separator';
 import { ScrollArea } from '~/components/scroll-area';
 
@@ -114,30 +114,62 @@ type PostWithUser = RouterOutputs['posts']['getAll'][number];
 const PostView = (props: PostWithUser) => {
     const { author, post } = props;
 
+    const ctx = api.useContext();
+
+    const { mutate } = api.posts.delete.useMutation({
+        onSuccess: () => {
+            toast({
+                title: 'Success!',
+                description: `Post deleted`,
+            });
+            void ctx.posts.getAll.invalidate();
+        },
+        onError: (error) => {
+            if (error.data?.code === 'TOO_MANY_REQUESTS') {
+                toast({ title: 'Error!', description: 'Too many requests' });
+                return;
+            } else {
+                toast({
+                    title: 'Error!',
+                    description: 'Failed to delete post',
+                });
+            }
+        },
+    });
+
+    const deletePost = () => {
+        mutate({ postId: post.id });
+    };
+
     return (
         <div key={post.id}>
-            <div className={'flex items-center gap-4 p-4'}>
-                <Image
-                    src={author.profileImageUrl}
-                    className="h-16 w-16 rounded-full"
-                    width={64}
-                    height={64}
-                    alt={`@${author.username}'s profile image`}
-                />
-                <div className="flex h-full flex-col justify-between gap-2">
-                    <div className={'flex flex-wrap'}>
-                        <Link href={`/@${author.username}`}>
-                            <span className="">{`@${author.username}`}</span>
-                        </Link>
-                        <span className="px-2 text-slate-400">·</span>
-                        <Link href={`/post/${post.id}`}>
-                            <span className="text-slate-400">{`${dayjs(
-                                post.createdAt,
-                            ).fromNow()}`}</span>
-                        </Link>
+            <div
+                className={'flex w-full items-center justify-between gap-4 p-4'}
+            >
+                <div className="flex gap-4">
+                    <Image
+                        src={author.profileImageUrl}
+                        className="h-16 w-16 rounded-full"
+                        width={64}
+                        height={64}
+                        alt={`@${author.username}'s profile image`}
+                    />
+                    <div className="flex h-full flex-col justify-between gap-2">
+                        <div className={'flex flex-wrap'}>
+                            <Link href={`/@${author.username}`}>
+                                <span className="">{`@${author.username}`}</span>
+                            </Link>
+                            <span className="px-2 text-slate-400">·</span>
+                            <Link href={`/post/${post.id}`}>
+                                <span className="text-slate-400">{`${dayjs(
+                                    post.createdAt,
+                                ).fromNow()}`}</span>
+                            </Link>
+                        </div>
+                        <span className="text-xl">{post.content}</span>
                     </div>
-                    <span className="text-xl">{post.content}</span>
                 </div>
+                <X onClick={deletePost} />
             </div>
             <Separator />
         </div>

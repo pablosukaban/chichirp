@@ -73,4 +73,38 @@ export const postsRouter = createTRPCRouter({
 
             return post;
         }),
+
+    delete: protectedProcedure
+        .input(z.object({ postId: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            const { success } = await ratelimit.limit(ctx.userId);
+            if (!success) throw new TRPCError({ code: 'TOO_MANY_REQUESTS' });
+
+            const foundPost = await ctx.prisma.post.findUnique({
+                where: {
+                    id: input.postId,
+                },
+            });
+
+            if (!foundPost) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: `Post with id ${input.postId} not found`,
+                });
+            }
+
+            if (foundPost.authorId !== ctx.userId) {
+                throw new TRPCError({
+                    code: 'FORBIDDEN',
+                });
+            }
+
+            const deletedPost = await ctx.prisma.post.delete({
+                where: {
+                    id: input.postId,
+                },
+            });
+
+            return deletedPost;
+        }),
 });
