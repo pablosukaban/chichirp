@@ -8,14 +8,14 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import Image from 'next/image';
 import { LoadingPage } from '~/components/loading';
 import { useState } from 'react';
-import { toast } from 'react-hot-toast';
+import { useToast } from '~/components/use-toast';
 import Link from 'next/link';
 
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
     const [inputValue, setInputValue] = useState('');
-
+    const { toast } = useToast();
     const { user } = useUser();
 
     const ctx = api.useContext();
@@ -29,9 +29,12 @@ const CreatePostWizard = () => {
             const errorMesage = error.data?.zodError?.fieldErrors.content;
 
             if (errorMesage && errorMesage[0]) {
-                toast.error(errorMesage[0]);
+                toast({ title: 'Error!', description: errorMesage[0] });
             } else {
-                toast.error('Failed to create post');
+                toast({
+                    title: 'Error!',
+                    description: 'Failed to create post',
+                });
             }
         },
     });
@@ -44,7 +47,7 @@ const CreatePostWizard = () => {
         if (e.key !== 'Enter') return;
 
         if (inputValue.length === 0) {
-            toast.error('Post cannot be empty');
+            toast({ title: 'Error!', description: 'Post cannot be empty' });
             return;
         }
 
