@@ -37,7 +37,7 @@ const Header = () => {
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuLabel>Profile</DropdownMenuLabel>
+                            <DropdownMenuLabel>Профиль</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <Link href={`/@${user.username}`}>
                                 <DropdownMenuItem>

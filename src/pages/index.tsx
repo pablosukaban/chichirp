@@ -70,16 +70,16 @@ const CreatePostWizard = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Create Post</CardTitle>
+                <CardTitle>Создать пост</CardTitle>
                 <CardDescription>
-                    Create a post, using only the emoji you want!
+                    Создайте пост, чтобы его все видели!
                 </CardDescription>
                 <CardContent className="flex items-center gap-2 p-2">
                     <Input
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         type="text"
-                        placeholder="Your emoji"
+                        placeholder="Ваш текст"
                         onKeyDown={handleKeyDown}
                     />
                     {user ? (
@@ -99,7 +99,7 @@ const CreatePostWizard = () => {
                             disabled={true}
                             className={'cursor-not-allowed'}
                         >
-                            Post
+                            Подтвердить
                         </Button>
                     )}
                 </CardContent>

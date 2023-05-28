@@ -28,7 +28,7 @@ const ProfileFeed = (props: { userId: string }) => {
     const onSuccess = () => {
         toast({
             title: 'Success!',
-            description: `Post deleted`,
+            description: `Пост удален`,
         });
         void ctx.posts.getPostsByUserId.invalidate({ userId: props.userId });
     };
@@ -68,7 +68,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             <main className="h-full space-y-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Profile Page</CardTitle>
+                        <CardTitle>Страница пользователя</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex gap-2 p-2">
@@ -82,7 +82,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                             <h1 className="flex flex-col items-start justify-between gap-2">
                                 <span>@{data.username}</span>
                                 <span>
-                                    Registered {dayjs(data.createdAt).fromNow()}
+                                    Зарегистрирован{' '}
+                                    {dayjs(data.createdAt).fromNow()}
                                 </span>
                             </h1>
                         </div>
