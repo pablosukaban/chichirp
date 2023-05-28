@@ -5,7 +5,7 @@ import { type RouterOutputs, api } from '~/utils/api';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import Image from 'next/image';
-import { LoadingPage } from '~/components/loading';
+import { LoadingPage } from '~/components/ui/loading';
 import { useState } from 'react';
 import { toast, useToast } from '~/components/use-toast';
 import Link from 'next/link';
@@ -15,12 +15,12 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from '~/components/card';
-import { Input } from '~/components/input';
-import { Button } from '~/components/button';
+} from '~/components/ui/card';
+import { Input } from '~/components/ui/input';
+import { Button } from '~/components/ui/button';
 import { Loader2, X } from 'lucide-react';
-import { Separator } from '~/components/separator';
-import { ScrollArea } from '~/components/scroll-area';
+import { Separator } from '~/components/ui/separator';
+import { ScrollArea } from '~/components/ui/scroll-area';
 
 dayjs.extend(relativeTime);
 

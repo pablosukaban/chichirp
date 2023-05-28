@@ -2,7 +2,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { type AppType } from 'next/app';
 import { api } from '~/utils/api';
 import '~/styles/globals.css';
-import { Toaster } from '~/components/toaster';
+import { Toaster } from '~/components/ui/toaster';
 import { ThemeProvider } from '~/components/theme-provider';
 import Header from '~/components/Header';
 import Footer from '~/components/Footer';

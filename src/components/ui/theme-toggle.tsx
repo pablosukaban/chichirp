@@ -3,15 +3,13 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '~/components/dropdown-menu';
+} from '~/components/ui/dropdown-menu';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, Laptop } from 'lucide-react';
-import { Button } from '~/components/button';
+import { Button } from '~/components/ui/button';
 
 const ThemeToggle = () => {
-    const { setTheme, theme: currentTheme } = useTheme();
-
-    console.log(currentTheme);
+    const { setTheme } = useTheme();
 
     return (
         <DropdownMenu>

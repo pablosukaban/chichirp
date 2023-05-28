@@ -7,10 +7,10 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '~/components/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/avatar';
+} from '~/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { LogOut, User } from 'lucide-react';
-import { Button } from '~/components/button';
+import { Button } from '~/components/ui/button';
 
 const Header = () => {
     const { isSignedIn, user, isLoaded: userLoaded } = useUser();

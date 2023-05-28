@@ -1,5 +1,5 @@
 import React from 'react';
-import ThemeToggle from '~/components/theme-toggle';
+import ThemeToggle from '~/components/ui/theme-toggle';
 import { useUser } from '@clerk/nextjs';
 
 const Footer = () => {
