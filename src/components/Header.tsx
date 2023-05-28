@@ -20,7 +20,7 @@ const Header = () => {
     if (!userLoaded) return <div />;
 
     return (
-        <header className="container mb-4 max-w-4xl py-6">
+        <header className="mb-4 py-6">
             <nav className="flex items-center justify-between">
                 <Link href="/" className="text-xl font-semibold">
                     Chichirp

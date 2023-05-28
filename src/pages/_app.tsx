@@ -7,14 +7,22 @@ import { ThemeProvider } from '~/components/theme-provider';
 import Header from '~/components/Header';
 import Footer from '~/components/Footer';
 
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
+
 const MyApp: AppType = ({ Component, pageProps }) => {
     return (
         <ClerkProvider {...pageProps}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                 <Toaster />
-                <Header />
-                <Component {...pageProps} />
-                <Footer />
+                <div
+                    className={`container min-h-screen max-w-5xl ${inter.className}`}
+                >
+                    <Header />
+                    <Component {...pageProps} />
+                    <Footer />
+                </div>
             </ThemeProvider>
         </ClerkProvider>
     );

@@ -8,12 +8,12 @@ const Footer = () => {
     if (!userLoaded) return <div />;
 
     return (
-        <footer className="container mt-4 max-w-4xl py-6">
+        <footer className="mt-4 py-6">
             <div className={'flex w-full justify-between'}>
-                <h1>
+                <h1 className="">
                     <span>Сделано с помощью </span>
                     <a
-                        className={'hover:underline'}
+                        className={'font-medium hover:underline'}
                         href={'https://create.t3.gg/'}
                         target={'_blank'}
                     >
@@ -21,7 +21,7 @@ const Footer = () => {
                     </a>
                     <span> Код доступен на </span>
                     <a
-                        className={'hover:underline'}
+                        className={'font-medium hover:underline'}
                         href={'https://github.com/pablosukaban/chichirp'}
                         target={'_blank'}
                     >
