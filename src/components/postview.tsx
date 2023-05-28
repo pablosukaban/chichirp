@@ -16,12 +16,15 @@ export const PostView = (props: PostWithUser) => {
         onSuccess: props.onSuccess,
         onError: (error) => {
             if (error.data?.code === 'TOO_MANY_REQUESTS') {
-                toast({ title: 'Error!', description: 'Too many requests' });
+                toast({
+                    title: 'Error!',
+                    description: 'Слишком много запросов',
+                });
                 return;
             } else {
                 toast({
                     title: 'Error!',
-                    description: 'Failed to delete post',
+                    description: 'Не удалось удалить пост',
                 });
             }
         },

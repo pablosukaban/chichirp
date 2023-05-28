@@ -34,7 +34,7 @@ const attachUserDataToPosts = async (posts: Post[]) => {
         if (!author || !author.username)
             throw new TRPCError({
                 code: 'INTERNAL_SERVER_ERROR',
-                message: 'Author not found',
+                message: 'Автор не найден',
             });
 
         return {
@@ -74,7 +74,12 @@ export const postsRouter = createTRPCRouter({
     create: protectedProcedure
         .input(
             z.object({
-                content: z.string().min(1).max(250),
+                content: z
+                    .string()
+                    .min(1, { message: 'Пост не может быть пустым' })
+                    .max(250, {
+                        message: 'Пост не может быть больше 250 символов',
+                    }),
             }),
         )
         .mutation(async ({ ctx, input }) => {
@@ -108,7 +113,7 @@ export const postsRouter = createTRPCRouter({
             if (!foundPost) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: `Post with id ${input.postId} not found`,
+                    message: 'Пост с таким id не найден',
                 });
             }
 

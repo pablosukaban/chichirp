@@ -49,24 +49,11 @@ const CreatePostWizard = () => {
     });
 
     const sendPost = () => {
-        if (!user) {
-            toast({ title: 'Error', description: 'Сначала авторизируйтесь' });
-            return;
-        }
         mutate({ content: inputValue });
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key !== 'Enter') return;
-
-        if (inputValue.length === 0) {
-            toast({
-                title: 'Error!',
-                description: 'Пост не может быть пустым',
-            });
-            return;
-        }
-
         sendPost();
     };
 
