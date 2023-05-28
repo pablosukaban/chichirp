@@ -1,3 +1,5 @@
+import { Skeleton } from './skeleton';
+
 export const LoadingSpinner = (props: { size?: number }) => {
     return (
         <div role="status">
@@ -24,10 +26,23 @@ export const LoadingSpinner = (props: { size?: number }) => {
     );
 };
 
+const PostSkeleton = () => {
+    return (
+        <div className="flex items-center space-x-4">
+            <Skeleton className="h-16 w-16 rounded-full" />
+            <div className="space-y-4">
+                <Skeleton className="h-4 w-[350px]" />
+                <Skeleton className="h-4 w-[300px]" />
+            </div>
+        </div>
+    );
+};
 export const LoadingPage = () => {
     return (
-        <div className="fixed inset-0 z-20 flex h-screen items-center justify-center">
-            <LoadingSpinner size={40} />
+        <div className="flex flex-col gap-6 rounded-md border p-6">
+            {new Array(8).fill(null).map((_, i) => (
+                <PostSkeleton key={i} />
+            ))}
         </div>
     );
 };

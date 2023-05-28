@@ -13,6 +13,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { PostView } from '~/components/postview';
 import { ScrollArea } from '~/components/ui/scroll-area';
 import { useToast } from '~/components/use-toast';
+import { LoadingPage } from '~/components/ui/loading';
 
 dayjs.extend(relativeTime);
 
@@ -32,13 +33,12 @@ const ProfileFeed = (props: { userId: string }) => {
         void ctx.posts.getPostsByUserId.invalidate({ userId: props.userId });
     };
 
-    if (isLoading) return <h1>Loading...</h1>;
+    if (isLoading) return <LoadingPage />;
     if (!data || !data.length) return <h1>No posts</h1>;
 
     return (
         <ScrollArea className={'h-screen w-full rounded-md border'}>
             <div className="p-4">
-                <h1 className="ml-2 text-lg font-semibold ">Feed</h1>
                 {data.map((post) => (
                     <PostView
                         key={post.post.id}

@@ -1,10 +1,8 @@
 import { type RouterOutputs, api } from '~/utils/api';
 import dayjs from 'dayjs';
 import Image from 'next/image';
-
 import { toast } from '~/components/use-toast';
 import Link from 'next/link';
-
 import { Separator } from '~/components/ui/separator';
 import { X } from 'lucide-react';
 
