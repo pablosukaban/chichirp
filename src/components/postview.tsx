@@ -36,7 +36,7 @@ export const PostView = (props: PostWithUser) => {
             <div
                 className={'flex w-full items-center justify-between gap-4 p-4'}
             >
-                <div className="flex gap-4">
+                <div className="flex w-full justify-start gap-4">
                     <Image
                         src={author.profileImageUrl}
                         className="h-16 w-16 rounded-full"
@@ -56,10 +56,10 @@ export const PostView = (props: PostWithUser) => {
                                 ).fromNow()}`}</span>
                             </Link>
                         </div>
-                        <span className="text-xl">{post.content}</span>
+                        <span className="">{post.content}</span>
                     </div>
                 </div>
-                <X onClick={deletePost} />
+                <X onClick={deletePost} className="h-6 w-6 cursor-pointer" />
             </div>
             <Separator />
         </div>
