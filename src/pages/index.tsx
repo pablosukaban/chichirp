@@ -42,7 +42,7 @@ const CreatePostWizard = () => {
             } else {
                 toast({
                     title: 'Error!',
-                    description: 'Failed to create post',
+                    description: 'Ошибка в создании поста',
                 });
             }
         },
@@ -50,7 +50,7 @@ const CreatePostWizard = () => {
 
     const sendPost = () => {
         if (!user) {
-            toast({ title: 'Error', description: 'Log in first' });
+            toast({ title: 'Error', description: 'Сначала авторизируйтесь' });
             return;
         }
         mutate({ content: inputValue });
@@ -60,7 +60,10 @@ const CreatePostWizard = () => {
         if (e.key !== 'Enter') return;
 
         if (inputValue.length === 0) {
-            toast({ title: 'Error!', description: 'Post cannot be empty' });
+            toast({
+                title: 'Error!',
+                description: 'Пост не может быть пустым',
+            });
             return;
         }
 
@@ -91,7 +94,7 @@ const CreatePostWizard = () => {
                             {isPosting ? (
                                 <Loader2 className="mx-1 h-4 w-4 animate-spin" />
                             ) : (
-                                'Post'
+                                'Подтвердить'
                             )}
                         </Button>
                     ) : (
@@ -117,7 +120,7 @@ const Feed = () => {
     const onSuccess = () => {
         toast({
             title: 'Success!',
-            description: `Post deleted`,
+            description: `Пост удален`,
         });
         void ctx.posts.getAll.invalidate();
     };
@@ -129,7 +132,7 @@ const Feed = () => {
     return (
         <ScrollArea className={'h-screen w-full rounded-md border'}>
             <div className="p-4">
-                <h1>Posts</h1>
+                <h1>Посты</h1>
                 {data.map((fullpost) => (
                     <PostView
                         key={fullpost.post.id}
