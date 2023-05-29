@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { toast } from '~/components/use-toast';
 import Link from 'next/link';
 import { Separator } from '~/components/ui/separator';
-import { X } from 'lucide-react';
+import { MoreHorizontal, Trash2, Link as LinkIcon } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -18,13 +18,58 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from './ui/alert-dialog';
+import React from 'react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 dayjs.extend(relativeTime);
+
+type ConfirmDeleteProps = {
+    trigger: React.ReactNode;
+    isOpen: boolean;
+    confirm: () => void;
+    close: () => void;
+};
+const ConfirmDelete = ({
+    confirm,
+    trigger,
+    isOpen,
+    close,
+}: ConfirmDeleteProps) => {
+    return (
+        <AlertDialog open={isOpen}>
+            <AlertDialogTrigger>{trigger}</AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        Вы уверены, что хотите удалить этот пост?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Это действие нельзя будет отменить.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel onClick={close}>
+                        Отмена
+                    </AlertDialogCancel>
+                    <AlertDialogAction onClick={confirm}>
+                        Подтвердить
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+};
 
 type PostWithUser = RouterOutputs['posts']['getAll'][number] & {
     onSuccess?: () => void;
 };
 export const PostView = (props: PostWithUser) => {
+    const [confirmOpened, setConfirmOpened] = React.useState(false);
     const { author, post } = props;
     const { user } = useUser();
 
@@ -48,6 +93,16 @@ export const PostView = (props: PostWithUser) => {
 
     const deletePost = () => {
         mutate({ postId: post.id });
+        // setConfirmOpened(true);
+    };
+
+    const share = () => {
+        void navigator.clipboard.writeText(
+            `${window.location.href}/post/${post.id}`,
+        );
+        toast({
+            description: 'Ссылка на пост успешно скопирована',
+        });
     };
 
     return (
@@ -78,29 +133,34 @@ export const PostView = (props: PostWithUser) => {
                         <span className="">{post.content}</span>
                     </div>
                 </div>
-                <AlertDialog>
-                    {user?.id === author.id && (
-                        <AlertDialogTrigger>
-                            <X className="h-6 w-6 cursor-pointer transition hover:scale-105" />
-                        </AlertDialogTrigger>
-                    )}
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>
-                                Вы уверены, что хотите удалить этот пост?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Это действие нельзя будет отменить.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Отмена</AlertDialogCancel>
-                            <AlertDialogAction onClick={deletePost}>
-                                Подтвердить
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <MoreHorizontal />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={share}>
+                            <span className="flex items-center gap-2">
+                                <LinkIcon className="h-4 w-4" />
+                                Поделиться
+                            </span>
+                        </DropdownMenuItem>
+                        {user?.id === author.id && (
+                            <DropdownMenuItem
+                                onClick={() => setConfirmOpened(true)}
+                            >
+                                <span className="flex items-center gap-2">
+                                    <Trash2 className="h-4 w-4" /> Удалить
+                                </span>
+                            </DropdownMenuItem>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <ConfirmDelete
+                    confirm={deletePost}
+                    isOpen={confirmOpened}
+                    trigger={<></>}
+                    close={() => setConfirmOpened(false)}
+                />
             </div>
             <Separator />
         </div>

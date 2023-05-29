@@ -3,8 +3,6 @@ import Head from 'next/head';
 import { PostView } from '~/components/postview';
 import { generateSSRHelper } from '~/server/helpers/ssgHelper';
 import { api } from '~/utils/api';
-import { redirect } from 'next/navigation';
-import { useToast } from '~/components/use-toast';
 import { useRouter } from 'next/router';
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
