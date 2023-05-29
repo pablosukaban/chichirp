@@ -5,12 +5,28 @@ import { toast } from '~/components/use-toast';
 import Link from 'next/link';
 import { Separator } from '~/components/ui/separator';
 import { X } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from './ui/alert-dialog';
+
+dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs['posts']['getAll'][number] & {
-    onSuccess: () => void;
+    onSuccess?: () => void;
 };
 export const PostView = (props: PostWithUser) => {
     const { author, post } = props;
+    const { user } = useUser();
 
     const { mutate } = api.posts.delete.useMutation({
         onSuccess: props.onSuccess,
@@ -62,7 +78,29 @@ export const PostView = (props: PostWithUser) => {
                         <span className="">{post.content}</span>
                     </div>
                 </div>
-                <X onClick={deletePost} className="h-6 w-6 cursor-pointer" />
+                <AlertDialog>
+                    {user?.id === author.id && (
+                        <AlertDialogTrigger>
+                            <X className="h-6 w-6 cursor-pointer transition hover:scale-105" />
+                        </AlertDialogTrigger>
+                    )}
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                Вы уверены, что хотите удалить этот пост?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Это действие нельзя будет отменить.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Отмена</AlertDialogCancel>
+                            <AlertDialogAction onClick={deletePost}>
+                                Подтвердить
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
             <Separator />
         </div>

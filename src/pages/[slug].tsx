@@ -2,10 +2,6 @@ import { type GetStaticProps, type NextPage } from 'next';
 import Head from 'next/head';
 import { api } from '~/utils/api';
 
-import { createServerSideHelpers } from '@trpc/react-query/server';
-import { appRouter } from '~/server/api/root';
-import { prisma } from '~/server/db';
-import SuperJSON from 'superjson';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import Image from 'next/image';
 import dayjs from 'dayjs';
@@ -14,6 +10,7 @@ import { PostView } from '~/components/postview';
 import { ScrollArea } from '~/components/ui/scroll-area';
 import { useToast } from '~/components/use-toast';
 import { LoadingPage } from '~/components/ui/loading';
+import { generateSSRHelper } from '~/server/helpers/ssgHelper';
 
 dayjs.extend(relativeTime);
 
@@ -71,7 +68,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                         <CardTitle>Страница пользователя</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex gap-2 p-2">
+                        <div className="flex gap-4 p-2">
                             <Image
                                 src={data.profileImageUrl}
                                 alt={`${data.username}'s profile image'`}
@@ -96,15 +93,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-    const helpers = createServerSideHelpers({
-        router: appRouter,
-        ctx: {
-            prisma,
-            userId: null,
-        },
-
-        transformer: SuperJSON,
-    });
+    const helpers = generateSSRHelper();
 
     const slug = context.params?.slug;
 

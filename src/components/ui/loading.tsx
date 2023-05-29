@@ -26,7 +26,7 @@ export const LoadingSpinner = (props: { size?: number }) => {
     );
 };
 
-const PostSkeleton = () => {
+export const PostSkeleton = () => {
     return (
         <div className="flex items-center space-x-4">
             <Skeleton className="h-16 w-16 rounded-full" />

@@ -17,7 +17,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                 <Toaster />
                 <div
-                    className={`container min-h-screen max-w-5xl ${inter.className}`}
+                    className={`container flex min-h-screen max-w-5xl flex-col justify-between ${inter.className}`}
                 >
                     <Header />
                     <Component {...pageProps} />
