@@ -98,7 +98,7 @@ export const PostView = (props: PostWithUser) => {
 
     const share = () => {
         void navigator.clipboard.writeText(
-            `${window.location.href}/post/${post.id}`,
+            `${window.location.href}post/${post.id}`,
         );
         toast({
             description: 'Ссылка на пост успешно скопирована',
