@@ -6,7 +6,7 @@ import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
-    const { data } = api.posts.getById.useQuery({ id });
+    const { data: postWithAutor } = api.posts.getById.useQuery({ id });
     const router = useRouter();
 
     const ctx = api.useContext();
@@ -16,7 +16,7 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
         void router.push('/');
     };
 
-    if (!data) return null;
+    if (!postWithAutor) return null;
 
     return (
         <>
@@ -27,7 +27,7 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
             </Head>
             <main className="h-full justify-self-start rounded-md border p-4">
                 <h1 className="ml-2 text-lg font-medium">Пост</h1>
-                <PostView {...data} onSuccess={onSuccess} />
+                <PostView {...postWithAutor} onSuccess={onSuccess} />
             </main>
         </>
     );

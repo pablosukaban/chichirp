@@ -1,5 +1,6 @@
 import { type RouterOutputs, api } from '~/utils/api';
 import dayjs from 'dayjs';
+import 'dayjs/locale/ru';
 import Image from 'next/image';
 import { toast } from '~/components/use-toast';
 import Link from 'next/link';
@@ -27,6 +28,7 @@ import {
 } from './ui/dropdown-menu';
 
 dayjs.extend(relativeTime);
+dayjs.locale('ru');
 
 type ConfirmDeleteProps = {
     trigger: React.ReactNode;

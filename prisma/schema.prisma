@@ -12,10 +12,22 @@ datasource db {
 }
 
 model Post {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    content   String   @db.VarChar(255)
+    id        String     @id @default(uuid())
+    createdAt DateTime   @default(now())
+    content   String     @db.VarChar(255)
     authorId  String
+    comments  Comments[]
 
+    @@index([authorId])
+}
+
+model Comments {
+    id       String  @id @default(uuid())
+    comment  String
+    Post     Post?   @relation(fields: [postId], references: [id])
+    postId   String?
+    authorId String
+
+    @@index([postId])
     @@index([authorId])
 }
