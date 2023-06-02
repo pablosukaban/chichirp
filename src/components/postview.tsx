@@ -31,12 +31,14 @@ dayjs.extend(relativeTime);
 dayjs.locale('ru');
 
 type ConfirmDeleteProps = {
+    text: string;
     trigger: React.ReactNode;
     isOpen: boolean;
     confirm: () => void;
     close: () => void;
 };
-const ConfirmDelete = ({
+export const ConfirmDelete = ({
+    text,
     confirm,
     trigger,
     isOpen,
@@ -48,7 +50,7 @@ const ConfirmDelete = ({
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Вы уверены, что хотите удалить этот пост?
+                        Вы уверены, что хотите удалить этот {text}?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         Это действие нельзя будет отменить.
@@ -69,10 +71,11 @@ const ConfirmDelete = ({
 
 type PostWithUser = RouterOutputs['posts']['getAll'][number] & {
     onSuccess?: () => void;
+    isSeparatorNeeded?: boolean;
 };
 export const PostView = (props: PostWithUser) => {
     const [confirmOpened, setConfirmOpened] = React.useState(false);
-    const { author, post } = props;
+    const { author, post, isSeparatorNeeded = true } = props;
     const { user } = useUser();
 
     const { mutate } = api.posts.delete.useMutation({
@@ -158,13 +161,14 @@ export const PostView = (props: PostWithUser) => {
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <ConfirmDelete
+                    text="Пост"
                     confirm={deletePost}
                     isOpen={confirmOpened}
                     trigger={<></>}
                     close={() => setConfirmOpened(false)}
                 />
             </div>
-            <Separator />
+            {isSeparatorNeeded && <Separator />}
         </div>
     );
 };

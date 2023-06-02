@@ -72,7 +72,9 @@ export const postsRouter = createTRPCRouter({
                     message: 'Пост не найден',
                 });
 
-            return (await attachUserDataToPosts([post]))[0];
+            const postsWithUsers = (await attachUserDataToPosts([post]))[0];
+
+            return postsWithUsers;
         }),
 
     getPostsByUserId: publicProcedure
