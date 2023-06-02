@@ -9,7 +9,7 @@ import { filterUserForClient } from '~/server/helpers/filterUserForClient';
 import { type Post } from '@prisma/client';
 
 // Create a new ratelimiter, that allows 5 requests per 1 minute
-const ratelimit = new Ratelimit({
+export const ratelimit = new Ratelimit({
     redis: Redis.fromEnv(),
     limiter: Ratelimit.slidingWindow(5, '1 m'),
     analytics: true,

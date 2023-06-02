@@ -2,7 +2,7 @@ import { type GetStaticProps, type NextPage } from 'next';
 import Head from 'next/head';
 import { PostView } from '~/components/postview';
 import { generateSSRHelper } from '~/server/helpers/ssgHelper';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 import { api } from '~/utils/api';
 
 import dayjs from 'dayjs';
@@ -11,28 +11,92 @@ import 'dayjs/locale/ru';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 import { CommentView } from '~/components/commentview';
-import { Loader2 } from 'lucide-react';
 import { LoadingPage } from '~/components/ui/loading';
 import { ScrollArea } from '~/components/ui/scroll-area';
-import { Separator } from '~/components/ui/separator';
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
+import { useState } from 'react';
+import { useToast } from '~/components/use-toast';
+// import { useUser } from '@clerk/nextjs';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ru');
+
+const CreateCommentWizard = ({ postId }: { postId: string }) => {
+    const [inputValue, setInputValue] = useState('');
+    const { toast } = useToast();
+    // const { user } = useUser();
+    const ctx = api.useContext();
+
+    const { mutate, isLoading: commentCreating } =
+        api.comments.create.useMutation({
+            onSuccess: () => {
+                setInputValue('');
+                toast({
+                    title: 'Success!',
+                    description: 'Комментарий успешно создан',
+                });
+                void ctx.comments.getAll.invalidate();
+            },
+            onError: (error) => {
+                const errorMesage = error.data?.zodError?.fieldErrors.content;
+
+                if (errorMesage && errorMesage[0]) {
+                    toast({ title: 'Error!', description: errorMesage[0] });
+                } else {
+                    toast({
+                        title: 'Error!',
+                        description: 'Ошибка в создании комментария',
+                    });
+                }
+            },
+        });
+
+    const createPost = () => {
+        mutate({ comment: inputValue, postId });
+    };
+
+    const handleButtonClick = () => {
+        createPost();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key !== 'Enter') return;
+        createPost();
+    };
+
+    return (
+        <div className="rounded-md border p-4">
+            <h1 className="mb-2 text-center font-semibold">
+                Напишите комментарий!
+            </h1>
+            <div className="flex gap-2">
+                <Input
+                    placeholder="Ваш комментарий"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+                <Button onClick={handleButtonClick} disabled={commentCreating}>
+                    Отправить
+                </Button>
+            </div>
+        </div>
+    );
+};
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
     const { data: postWithAutor } = api.posts.getById.useQuery({ id });
     const { data: commentsData, isLoading: commentsLoading } =
         api.comments.getAll.useQuery({ postId: id });
 
-    const router = useRouter();
+    // const router = useRouter();
 
-    const ctx = api.useContext();
+    // const ctx = api.useContext();
 
     const onSuccess = () => {
-        void ctx.posts.getAll.invalidate();
-        void router.push('/');
+        // void ctx.posts.getAll.invalidate();
+        // void router.push('/');
     };
 
     if (!postWithAutor) return null;
@@ -53,15 +117,7 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
                         isSeparatorNeeded={false}
                     />
                 </div>
-                <div className="rounded-md border p-4">
-                    <h1 className="mb-2 text-center font-semibold">
-                        Напишите комментарий!
-                    </h1>
-                    <div className="flex gap-2">
-                        <Input placeholder="Ваш комментарий" />
-                        <Button>Отправить</Button>
-                    </div>
-                </div>
+                <CreateCommentWizard postId={postWithAutor.post.id} />
                 {commentsLoading && <LoadingPage />}
                 <ScrollArea className={'w-full rounded-md border'}>
                     <div className="p-4">
