@@ -89,11 +89,6 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
     const { data: postWithAutor } = api.posts.getById.useQuery({ id });
     const { data: commentsData, isLoading: commentsLoading } =
         api.comments.getAll.useQuery({ postId: id });
-
-    // const router = useRouter();
-
-    // const ctx = api.useContext();
-
     const onSuccess = () => {
         // void ctx.posts.getAll.invalidate();
         // void router.push('/');

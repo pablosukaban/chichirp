@@ -8,17 +8,6 @@ import { Separator } from '~/components/ui/separator';
 import { MoreHorizontal, Trash2, Link as LinkIcon } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from './ui/alert-dialog';
 import React from 'react';
 import {
     DropdownMenu,
@@ -26,48 +15,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { ConfirmDelete } from './ui/confirmDelete';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ru');
-
-type ConfirmDeleteProps = {
-    text: string;
-    trigger: React.ReactNode;
-    isOpen: boolean;
-    confirm: () => void;
-    close: () => void;
-};
-export const ConfirmDelete = ({
-    text,
-    confirm,
-    trigger,
-    isOpen,
-    close,
-}: ConfirmDeleteProps) => {
-    return (
-        <AlertDialog open={isOpen}>
-            <AlertDialogTrigger>{trigger}</AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>
-                        Вы уверены, что хотите удалить этот {text}?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Это действие нельзя будет отменить.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel onClick={close}>
-                        Отмена
-                    </AlertDialogCancel>
-                    <AlertDialogAction onClick={confirm}>
-                        Подтвердить
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
-};
 
 type PostWithUser = RouterOutputs['posts']['getAll'][number] & {
     onSuccess?: () => void;
@@ -78,7 +29,7 @@ export const PostView = (props: PostWithUser) => {
     const { author, post, isSeparatorNeeded = true } = props;
     const { user } = useUser();
 
-    const { mutate } = api.posts.delete.useMutation({
+    const { mutate, isLoading: postDeleting } = api.posts.delete.useMutation({
         onSuccess: props.onSuccess,
         onError: (error) => {
             if (error.data?.code === 'TOO_MANY_REQUESTS') {
@@ -166,6 +117,7 @@ export const PostView = (props: PostWithUser) => {
                     isOpen={confirmOpened}
                     trigger={<></>}
                     close={() => setConfirmOpened(false)}
+                    isLoading={postDeleting}
                 />
             </div>
             {isSeparatorNeeded && <Separator />}

@@ -1,13 +1,13 @@
-import { ConfirmDelete } from '~/components/postview';
+import { ConfirmDelete } from '~/components/ui/confirmDelete';
 
-import { type RouterOutputs } from '~/utils/api';
+import { api, type RouterOutputs } from '~/utils/api';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
 import { Separator } from '~/components/ui/separator';
-import { MoreHorizontal, Trash2, Link as LinkIcon } from 'lucide-react';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
@@ -18,6 +18,7 @@ import {
     DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 import { useState } from 'react';
+import { toast } from './use-toast';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ru');
@@ -27,9 +28,28 @@ export const CommentView = (props: CommentWithUser) => {
     const [confirmOpened, setConfirmOpened] = useState(false);
     const { author, comment } = props;
     const { user } = useUser();
+    const ctx = api.useContext();
+    const { mutate, isLoading: commentDeleting } =
+        api.comments.delete.useMutation({
+            onSuccess: () => {
+                setConfirmOpened(false);
+                void ctx.comments.getAll.invalidate();
+                toast({
+                    title: 'Success!',
+                    description: 'Комментарий успешно удален',
+                });
+            },
+            onError: (error) => {
+                const errorMesage = error.data?.zodError?.fieldErrors.content;
+                setConfirmOpened(false);
+                toast({
+                    title: 'Error!',
+                });
+            },
+        });
 
     const deletePost = () => {
-        console.log('yo');
+        mutate({ commentId: comment.id });
     };
 
     return (
@@ -50,10 +70,10 @@ export const CommentView = (props: CommentWithUser) => {
                             <Link href={`/@${author.username}`}>
                                 <span className="text-sm">{`@${author.username}`}</span>
                             </Link>
-                            {/* <span className="px-2 text-slate-400">·</span> */}
-                            {/* <span className="text-slate-400">{`${dayjs(
-                                comment.createdAt,
-                            ).fromNow()}`}</span> */}
+                            <span className="px-2 text-slate-400">·</span>
+                            <span className="text-slate-400">{`${dayjs(
+                                String(comment.createdAt),
+                            ).fromNow()}`}</span>
                         </div>
                         <span className="text-base">{comment.comment}</span>
                     </div>
@@ -63,12 +83,6 @@ export const CommentView = (props: CommentWithUser) => {
                         <MoreHorizontal />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        {/* <DropdownMenuItem onClick={share}>
-                            <span className="flex items-center gap-2">
-                                <LinkIcon className="h-4 w-4" />
-                                Поделиться
-                            </span>
-                        </DropdownMenuItem> */}
                         {user?.id === author.id && (
                             <DropdownMenuItem
                                 onClick={() => setConfirmOpened(true)}
@@ -85,6 +99,7 @@ export const CommentView = (props: CommentWithUser) => {
                     confirm={deletePost}
                     isOpen={confirmOpened}
                     trigger={<></>}
+                    isLoading={commentDeleting}
                     close={() => setConfirmOpened(false)}
                 />
             </div>

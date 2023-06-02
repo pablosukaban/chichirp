@@ -81,4 +81,41 @@ export const commentsRouter = createTRPCRouter({
 
             return comment;
         }),
+    delete: protectedProcedure
+        .input(
+            z.object({
+                commentId: z.string(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const { success } = await ratelimit.limit(ctx.userId);
+            if (!success) throw new TRPCError({ code: 'TOO_MANY_REQUESTS' });
+
+            const foundComment = await ctx.prisma.comments.findUnique({
+                where: {
+                    id: input.commentId,
+                },
+            });
+
+            if (!foundComment) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Комментарий с таким id не найден',
+                });
+            }
+
+            if (foundComment.authorId !== ctx.userId) {
+                throw new TRPCError({
+                    code: 'FORBIDDEN',
+                });
+            }
+
+            const deletedComment = await ctx.prisma.comments.delete({
+                where: {
+                    id: input.commentId,
+                },
+            });
+
+            return deletedComment;
+        }),
 });
