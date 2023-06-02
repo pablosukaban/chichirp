@@ -11,8 +11,12 @@ import { ScrollArea } from '~/components/ui/scroll-area';
 import { useToast } from '~/components/use-toast';
 import { LoadingPage } from '~/components/ui/loading';
 import { generateSSRHelper } from '~/server/helpers/ssgHelper';
+import 'dayjs/locale/ru';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 
+dayjs.locale('ru');
 dayjs.extend(relativeTime);
+dayjs.extend(customParseFormat);
 
 const ProfileFeed = (props: { userId: string }) => {
     const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
@@ -55,6 +59,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
     if (!data || !data.username) return <h1>404</h1>;
 
+    // const d =
+
     return (
         <>
             <Head>
@@ -80,7 +86,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                                 <span>@{data.username}</span>
                                 <span>
                                     Зарегистрирован{' '}
-                                    {dayjs(data.createdAt).fromNow()}
+                                    {dayjs(data.createdAt).format('DD.MM.YYYY')}
                                 </span>
                             </h1>
                         </div>
