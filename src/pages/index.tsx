@@ -21,7 +21,6 @@ import { ScrollArea } from '~/components/ui/scroll-area';
 import { PostView } from '~/components/postview';
 
 dayjs.extend(relativeTime);
-
 const CreatePostWizard = () => {
     const [inputValue, setInputValue] = useState('');
     const { toast } = useToast();

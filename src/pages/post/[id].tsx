@@ -2,86 +2,59 @@ import { type GetStaticProps, type NextPage } from 'next';
 import Head from 'next/head';
 import { PostView } from '~/components/postview';
 import { generateSSRHelper } from '~/server/helpers/ssgHelper';
-// import { useRouter } from 'next/router';
 import { api } from '~/utils/api';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
-
 import relativeTime from 'dayjs/plugin/relativeTime';
 
-import { CommentView } from '~/components/commentview';
-import { LoadingPage } from '~/components/ui/loading';
 import { ScrollArea } from '~/components/ui/scroll-area';
-import { Input } from '~/components/ui/input';
-import { Button } from '~/components/ui/button';
-import { useState } from 'react';
-import { useToast } from '~/components/use-toast';
-// import { useUser } from '@clerk/nextjs';
+import { type Comments } from '@prisma/client';
+import CreateCommentWizard from '~/components/CreateCommentsWizzard';
+import { LoadingPage } from '~/components/ui/loading';
+import { CommentView } from '~/components/commentview';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ru');
 
-const CreateCommentWizard = ({ postId }: { postId: string }) => {
-    const [inputValue, setInputValue] = useState('');
-    const { toast } = useToast();
-    // const { user } = useUser();
-    const ctx = api.useContext();
+interface CommentsFeedProps {
+    commentsData:
+        | {
+              comment: Comments;
+              author: {
+                  username: string;
+                  id: string;
+                  profileImageUrl: string;
+                  createdAt: number;
+              };
+          }[]
+        | undefined;
+    commentsIsLoading: boolean;
+}
 
-    const { mutate, isLoading: commentCreating } =
-        api.comments.create.useMutation({
-            onSuccess: () => {
-                setInputValue('');
-                toast({
-                    title: 'Success!',
-                    description: 'Комментарий успешно создан',
-                });
-                void ctx.comments.getAll.invalidate();
-            },
-            onError: (error) => {
-                const errorMesage = error.data?.zodError?.fieldErrors.content;
-
-                if (errorMesage && errorMesage[0]) {
-                    toast({ title: 'Error!', description: errorMesage[0] });
-                } else {
-                    toast({
-                        title: 'Error!',
-                        description: 'Ошибка в создании комментария',
-                    });
-                }
-            },
-        });
-
-    const createPost = () => {
-        mutate({ comment: inputValue, postId });
-    };
-
-    const handleButtonClick = () => {
-        createPost();
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key !== 'Enter') return;
-        createPost();
-    };
+const CommentsFeed = ({
+    commentsData,
+    commentsIsLoading,
+}: CommentsFeedProps) => {
+    if (commentsIsLoading) return <LoadingPage />;
 
     return (
-        <div className="rounded-md border p-4">
-            <h1 className="mb-2 text-center font-semibold">
-                Напишите комментарий!
-            </h1>
-            <div className="flex gap-2">
-                <Input
-                    placeholder="Ваш комментарий"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-                <Button onClick={handleButtonClick} disabled={commentCreating}>
-                    Отправить
-                </Button>
+        <ScrollArea className={'w-full rounded-md border'}>
+            <div className="p-4">
+                {!commentsData || commentsData.length === 0 ? (
+                    <h1 className="ml-2 text-center text-base font-medium">
+                        У этого поста пока нет комментариев. <br />
+                        Будьте первым!
+                    </h1>
+                ) : (
+                    <div>
+                        {commentsData.map((item) => (
+                            <CommentView {...item} key={item.comment.id} />
+                        ))}
+                    </div>
+                )}
             </div>
-        </div>
+        </ScrollArea>
     );
 };
 
@@ -113,26 +86,10 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
                     />
                 </div>
                 <CreateCommentWizard postId={postWithAutor.post.id} />
-                {commentsLoading && <LoadingPage />}
-                <ScrollArea className={'w-full rounded-md border'}>
-                    <div className="p-4">
-                        {!commentsData || commentsData?.length === 0 ? (
-                            <h1 className="ml-2 text-center text-base font-medium">
-                                У этого поста пока нет комментариев. <br />
-                                Будьте первым!
-                            </h1>
-                        ) : (
-                            <div>
-                                {commentsData.map((item) => (
-                                    <CommentView
-                                        {...item}
-                                        key={item.comment.id}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </ScrollArea>
+                <CommentsFeed
+                    commentsData={commentsData}
+                    commentsIsLoading={commentsLoading}
+                />
             </main>
         </>
     );
