@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { LoadingPage } from '~/components/ui/loading';
 import { useState } from 'react';
-import { useToast } from '~/components/use-toast';
+import { toast, useToast } from '~/components/use-toast';
 import {
     Card,
     CardContent,
@@ -32,6 +32,8 @@ const CreatePostWizard = () => {
         onSuccess: () => {
             setInputValue('');
             void ctx.posts.getAll.invalidate();
+            void ctx.posts.getInfinitePosts.invalidate();
+            toast({ title: 'Success!', description: 'Пост успешно создан' });
         },
         onError: (error) => {
             const errorMesage = error.data?.zodError?.fieldErrors.content;
@@ -131,11 +133,69 @@ const Feed = () => {
     );
 };
 
+const NewPostsFeed = () => {
+    const {
+        data: postsData,
+        fetchNextPage,
+        isLoading: isPostsLoading,
+    } = api.posts.getInfinitePosts.useInfiniteQuery(
+        {
+            limit: 5,
+        },
+        {
+            getNextPageParam: (lastPage) => {
+                return lastPage.nextCursor;
+            },
+        },
+    );
+
+    const ctx = api.useContext();
+
+    const loadMore = () => {
+        void fetchNextPage();
+    };
+
+    const onSuccess = () => {
+        toast({
+            title: 'Success!',
+            description: `Пост удален`,
+        });
+        void ctx.posts.getInfinitePosts.invalidate();
+    };
+
+    if (isPostsLoading) return <LoadingPage />;
+
+    if (!postsData) return <h1>No data</h1>;
+
+    return (
+        <div className="rounded-md border p-4">
+            {postsData.pages.map((page) => (
+                <div key={page.nextCursor}>
+                    {page.posts.map((item) => (
+                        <PostView
+                            key={item.post.id}
+                            {...item}
+                            onSuccess={onSuccess}
+                        />
+                    ))}
+                </div>
+            ))}
+            <div className="flex w-full items-center justify-center">
+                <Button
+                    onClick={loadMore}
+                    disabled={isPostsLoading}
+                    variant={'outline'}
+                    className="mt-2"
+                >
+                    Загрузить еще
+                </Button>
+            </div>
+        </div>
+    );
+};
+
 const Home: NextPage = () => {
     const { isLoaded: userLoaded } = useUser();
-
-    api.posts.getAll.useQuery();
-
     if (!userLoaded) return <div />;
 
     return (
@@ -147,7 +207,7 @@ const Home: NextPage = () => {
             </Head>
             <main className="space-y-4">
                 <CreatePostWizard />
-                <Feed />
+                <NewPostsFeed />
             </main>
         </>
     );

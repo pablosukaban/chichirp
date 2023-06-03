@@ -151,4 +151,40 @@ export const postsRouter = createTRPCRouter({
 
             return deletedPost;
         }),
+
+    getInfinitePosts: publicProcedure
+        .input(
+            z.object({
+                limit: z.number().min(1).max(100).nullish(),
+                cursor: z.string().nullish(),
+                skip: z.number().optional(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+            const limit = input.limit ?? 5;
+            const { cursor } = input;
+
+            const posts = await ctx.prisma.post.findMany({
+                take: limit + 1,
+                skip: input.skip,
+                cursor: cursor ? { id: cursor } : undefined,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+
+            let nextCursor: typeof cursor | undefined = undefined;
+
+            if (posts.length > limit) {
+                const nextPost = posts.pop();
+                nextCursor = nextPost?.id;
+            }
+
+            const postsWithUsers = await attachUserDataToPosts(posts);
+
+            return {
+                nextCursor,
+                posts: postsWithUsers,
+            };
+        }),
 });
