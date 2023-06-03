@@ -74,7 +74,7 @@ export const PostView = (props: PostWithUser) => {
                         height={64}
                         alt={`@${author.username}'s profile image`}
                     />
-                    <div className="flex h-full flex-col justify-between gap-2">
+                    <div className="flex flex-col flex-wrap justify-between gap-2">
                         <div className={'flex flex-wrap'}>
                             <Link href={`/@${author.username}`}>
                                 <span className="">{`@${author.username}`}</span>
@@ -86,7 +86,7 @@ export const PostView = (props: PostWithUser) => {
                                 ).fromNow()}`}</span>
                             </Link>
                         </div>
-                        <span className="">{post.content}</span>
+                        <span className="break-all">{post.content}</span>
                     </div>
                 </div>
                 <DropdownMenu>
