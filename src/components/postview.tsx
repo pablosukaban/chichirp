@@ -74,43 +74,56 @@ export const PostView = (props: PostWithUser) => {
                         height={64}
                         alt={`@${author.username}'s profile image`}
                     />
-                    <div className="flex flex-col flex-wrap justify-between gap-2">
-                        <div className={'flex flex-wrap'}>
-                            <Link href={`/@${author.username}`}>
-                                <span className="">{`@${author.username}`}</span>
-                            </Link>
-                            <span className="px-2 text-slate-400">·</span>
-                            <Link href={`/post/${post.id}`}>
-                                <span className="text-slate-400">{`${dayjs(
-                                    post.createdAt,
-                                ).fromNow()}`}</span>
-                            </Link>
+                    <div className="flex w-full flex-col flex-wrap justify-between gap-2">
+                        <div
+                            className={
+                                'flex w-full items-center justify-between gap-2'
+                            }
+                        >
+                            <div className="flex flex-wrap">
+                                <Link href={`/@${author.username}`}>
+                                    <span className="">{`@${author.username}`}</span>
+                                </Link>
+                                <span className="px-2 text-slate-400">·</span>
+                                <Link href={`/post/${post.id}`}>
+                                    <span className="text-slate-400">{`${dayjs(
+                                        post.createdAt,
+                                    ).fromNow()}`}</span>
+                                </Link>
+                            </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                    <MoreHorizontal />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={share}>
+                                        <span className="flex items-center gap-2">
+                                            <LinkIcon className="h-4 w-4" />
+                                            Поделиться
+                                        </span>
+                                    </DropdownMenuItem>
+                                    {user?.id === author.id && (
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                setConfirmOpened(true)
+                                            }
+                                        >
+                                            <span className="flex items-center gap-2">
+                                                <Trash2 className="h-4 w-4" />{' '}
+                                                Удалить
+                                            </span>
+                                        </DropdownMenuItem>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
-                        <span className="break-all">{post.content}</span>
+                        <Link href={`/post/${post.id}`}>
+                            <span className="cursor-pointer break-all">
+                                {post.content}
+                            </span>
+                        </Link>
                     </div>
                 </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <MoreHorizontal />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={share}>
-                            <span className="flex items-center gap-2">
-                                <LinkIcon className="h-4 w-4" />
-                                Поделиться
-                            </span>
-                        </DropdownMenuItem>
-                        {user?.id === author.id && (
-                            <DropdownMenuItem
-                                onClick={() => setConfirmOpened(true)}
-                            >
-                                <span className="flex items-center gap-2">
-                                    <Trash2 className="h-4 w-4" /> Удалить
-                                </span>
-                            </DropdownMenuItem>
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
                 <ConfirmDelete
                     text="Пост"
                     confirm={deletePost}
