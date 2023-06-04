@@ -7,21 +7,34 @@ import Image from 'next/image';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { PostView } from '~/components/postview';
-import { ScrollArea } from '~/components/ui/scroll-area';
 import { useToast } from '~/components/use-toast';
 import { LoadingPage } from '~/components/ui/loading';
 import { generateSSRHelper } from '~/server/helpers/ssgHelper';
 import 'dayjs/locale/ru';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { Button } from '~/components/ui/button';
 
 dayjs.locale('ru');
 dayjs.extend(relativeTime);
 dayjs.extend(customParseFormat);
 
 const ProfileFeed = (props: { userId: string }) => {
-    const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
-        userId: props.userId,
-    });
+    const {
+        data: postsData,
+        isLoading: isPostsLoading,
+        fetchNextPage,
+    } = api.posts.getInfiniteByUserId.useInfiniteQuery(
+        {
+            limit: 5,
+            userId: props.userId,
+        },
+        {
+            getNextPageParam: (lastPage) => {
+                return lastPage.nextCursor;
+            },
+        },
+    );
+
     const { toast } = useToast();
 
     const ctx = api.useContext();
@@ -34,21 +47,39 @@ const ProfileFeed = (props: { userId: string }) => {
         void ctx.posts.getPostsByUserId.invalidate({ userId: props.userId });
     };
 
-    if (isLoading) return <LoadingPage />;
-    if (!data || !data.length) return <h1>No posts</h1>;
+    const loadMore = () => {
+        void fetchNextPage();
+    };
+
+    if (isPostsLoading) return <LoadingPage />;
+    // if (!data || !data.length) return <h1>No posts</h1>;
+
+    if (!postsData) return <h1>No data</h1>;
 
     return (
-        <ScrollArea className={'h-screen w-full rounded-md border'}>
-            <div className="p-4">
-                {data.map((post) => (
-                    <PostView
-                        key={post.post.id}
-                        {...post}
-                        onSuccess={onSuccess}
-                    />
-                ))}
+        <div className={'w-full rounded-md border p-4'}>
+            {postsData.pages.map((page) => (
+                <div key={page.nextCursor}>
+                    {page.posts.map((item) => (
+                        <PostView
+                            key={item.post.id}
+                            {...item}
+                            onSuccess={onSuccess}
+                        />
+                    ))}
+                </div>
+            ))}
+            <div className="flex w-full items-center justify-center">
+                <Button
+                    onClick={loadMore}
+                    disabled={isPostsLoading}
+                    variant={'outline'}
+                    className="mt-2"
+                >
+                    Загрузить еще
+                </Button>
             </div>
-        </ScrollArea>
+        </div>
     );
 };
 

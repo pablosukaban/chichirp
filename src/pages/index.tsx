@@ -17,7 +17,6 @@ import {
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { ScrollArea } from '~/components/ui/scroll-area';
 import { PostView } from '~/components/postview';
 
 dayjs.extend(relativeTime);
@@ -96,40 +95,6 @@ const CreatePostWizard = () => {
                 </CardContent>
             </CardHeader>
         </Card>
-    );
-};
-
-const Feed = () => {
-    const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
-    const { toast } = useToast();
-
-    const ctx = api.useContext();
-
-    const onSuccess = () => {
-        toast({
-            title: 'Success!',
-            description: `Пост удален`,
-        });
-        void ctx.posts.getAll.invalidate();
-    };
-
-    if (postsLoading) return <LoadingPage />;
-
-    if (!data) return <h1>No data</h1>;
-
-    return (
-        <ScrollArea className={'h-screen w-full rounded-md border'}>
-            <div className="p-4">
-                <h1>Посты</h1>
-                {data.map((fullpost) => (
-                    <PostView
-                        key={fullpost.post.id}
-                        {...fullpost}
-                        onSuccess={onSuccess}
-                    />
-                ))}
-            </div>
-        </ScrollArea>
     );
 };
 
