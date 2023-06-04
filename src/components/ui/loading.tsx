@@ -46,7 +46,7 @@ export const LoadingPage = ({
 }) => {
     return (
         <div className="flex flex-col gap-6 rounded-md border p-6">
-            {new Array(count ?? 5).fill(null).map((_, i) => (
+            {new Array(count ?? 6).fill(null).map((_, i) => (
                 <PostSkeleton key={i} />
             ))}
         </div>
