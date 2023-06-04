@@ -67,13 +67,15 @@ export const PostView = (props: PostWithUser) => {
                 className={'flex w-full items-center justify-between gap-4 p-4'}
             >
                 <div className="flex w-full justify-start gap-4">
-                    <Image
-                        src={author.profileImageUrl}
-                        className="h-16 w-16 rounded-full"
-                        width={64}
-                        height={64}
-                        alt={`@${author.username}'s profile image`}
-                    />
+                    <Link href={`/@${author.username}`}>
+                        <Image
+                            src={author.profileImageUrl}
+                            className="h-16 w-16 rounded-full"
+                            width={64}
+                            height={64}
+                            alt={`@${author.username}'s profile image`}
+                        />
+                    </Link>
                     <div className="flex w-full flex-col flex-wrap justify-between gap-2">
                         <div
                             className={
