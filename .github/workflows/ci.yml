@@ -1,0 +1,29 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        env:
+            DATABASE_URL: 'https://fake.com'
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Run TypeScript check
+              run: pnpm run build
+
+            - name: Run lint
+              run: pnpm run lint
