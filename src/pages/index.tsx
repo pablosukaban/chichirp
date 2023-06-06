@@ -62,7 +62,7 @@ const CreatePostWizard = () => {
             <CardHeader>
                 <CardTitle>Создать пост</CardTitle>
                 <CardDescription>
-                    Создайте пост, чтобы его все видели!
+                    Напишите новый пост, чтобы его все увидели!
                 </CardDescription>
                 <CardContent className="flex items-center gap-2 p-2">
                     <Input
