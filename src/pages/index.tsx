@@ -23,7 +23,7 @@ dayjs.extend(relativeTime);
 const CreatePostWizard = () => {
     const [inputValue, setInputValue] = useState('');
     const { toast } = useToast();
-    const { user } = useUser();
+    const { user, isSignedIn } = useUser();
 
     const ctx = api.useContext();
 
@@ -69,7 +69,11 @@ const CreatePostWizard = () => {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         type="text"
-                        placeholder="Ваш текст"
+                        placeholder={`${
+                            isSignedIn
+                                ? 'Введите текст поста'
+                                : 'Войдите, чтобы создать пост'
+                        }`}
                         onKeyDown={handleKeyDown}
                     />
                     {user ? (
